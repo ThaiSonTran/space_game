@@ -2,9 +2,23 @@
 1584205420 source:e:\_areas\college life\ltnc_code\space_game\main.cpp
 	<iostream>
 
-1743416505 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
+1743426690 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
 	<stdio.h>
+	<iostream>
+	<string>
+	"player.h"
+	"globals.h"
+
+1743426754 e:\_areas\college life\ltnc_code\space_game\icld\globals.h
+
+1743426646 e:\_areas\college life\ltnc_code\space_game\icld\player.h
+
+1743426726 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
+	<SDL.h>
+	<string>
+	<SDL_image.h>
+	"player.h"
 
