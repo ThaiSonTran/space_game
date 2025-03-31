@@ -2,23 +2,36 @@
 1584205420 source:e:\_areas\college life\ltnc_code\space_game\main.cpp
 	<iostream>
 
-1743426690 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
+1743443138 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
-	<stdio.h>
 	<iostream>
+	<stdio.h>
 	<string>
-	"player.h"
-	"globals.h"
+	<player.h>
+	<viewport.h>
+	<background.h>
 
-1743426754 e:\_areas\college life\ltnc_code\space_game\icld\globals.h
+1743442465 e:\_areas\college life\ltnc_code\space_game\icld\globals.h
 
-1743426646 e:\_areas\college life\ltnc_code\space_game\icld\player.h
+1743442364 e:\_areas\college life\ltnc_code\space_game\icld\player.h
 
-1743426726 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
+1743444740 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
+	<string>
+	<SDL.h>
+	<SDL_image.h>
+	<player.h>
+
+1743444526 source:e:\_areas\college life\ltnc_code\space_game\src\background.cpp
 	<SDL.h>
 	<string>
 	<SDL_image.h>
-	"player.h"
+	"viewport.h"
+	"background.h"
+	<iostream>
+
+1743439779 e:\_areas\college life\ltnc_code\space_game\icld\viewport.h
+
+1743440693 e:\_areas\college life\ltnc_code\space_game\icld\background.h
 

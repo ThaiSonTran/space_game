@@ -1,16 +1,25 @@
-#include <SDL.h>
 #include <string>
+#include <SDL.h>
 #include <SDL_image.h>
-#include "player.h"
+#include <player.h>
 
+
+Player::Player(){
+    x = INT_MAX / 2;
+    y = INT_MAX / 2;
+    vX = 0;
+    vY = 0;
+}
+int Player::getX(){
+    return this->x;
+}
+int Player::getY(){
+    return this->y;
+}
 void Player::freeData(){
     if(shipTexture == NULL ) return;
     SDL_DestroyTexture(shipTexture);
     shipTexture = NULL;
-    delete(&textureHeight);
-    delete(&textureWidth);
-    delete(&x);
-    delete(&y);
 }
 bool Player::loadTexture(SDL_Renderer *renderer, std::string path){
 	freeData();
@@ -43,4 +52,24 @@ void Player::render(SDL_Renderer *renderer, int x, int y){
 
 	//Render to screen
 	SDL_RenderCopy(renderer, shipTexture, NULL, &renderQuad);
+}
+void Player::increaseVelocity(const SDL_Keysym key_pressed){
+    switch(key_pressed.sym){
+    case SDLK_DOWN: vY += Player::VEL; break;
+    case SDLK_UP: vY -= Player::VEL; break;
+    case SDLK_RIGHT: vX += Player::VEL; break;
+    case SDLK_LEFT: vX -= Player::VEL; break;
+    }
+}
+void Player::decreaseVelocity(const SDL_Keysym key_pressed){
+    switch(key_pressed.sym){
+    case SDLK_DOWN: vY -= Player::VEL; break;
+    case SDLK_UP: vY += Player::VEL; break;
+    case SDLK_RIGHT: vX -= Player::VEL; break;
+    case SDLK_LEFT: vX += Player::VEL; break;
+    }
+}
+void Player::movePlayer(){
+    x += vX;
+    y += vY;
 }

@@ -1,11 +1,22 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
-#include <stdio.h>
 #include <iostream>
+#include <stdio.h>
 #include <string>
-#include "player.h"
-#include "globals.h"
+#include <player.h>
+#include <viewport.h>
+#include <background.h>
+
+const int WINDOW_WIDTH = 1300;
+const int WINDOW_HEIGHT = 700;
+
+SDL_Window *gameWindow;
+SDL_Renderer* gameRenderer;
+
+Player gamePlayer;
+TiledBackground background;
+ViewPort camera;
 
 bool initGame(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) return false;
@@ -52,17 +63,10 @@ void closeGame(){
 }
 bool loadMedia(){
     if(!gamePlayer.loadTexture(gameRenderer, "resources/green.png")) return false;
-
+    if(!background.loadTexture(gameRenderer, "resources/background1.png")) return false;
     return true;
 }
-void gameLogic(){
-    SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255);
-    SDL_RenderClear(gameRenderer);
 
-    gamePlayer.render(gameRenderer, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-
-    SDL_RenderPresent(gameRenderer);
-}
 int main(int argc, char* args[]){
     if(!initGame()){
         printf("Failed to initialize game\n");
@@ -76,9 +80,25 @@ int main(int argc, char* args[]){
     while(gameRunning){
         SDL_Event event;
         while(SDL_PollEvent(&event)){
-            if(event.type == SDL_QUIT) gameRunning = false;
+            if(event.type == SDL_QUIT)
+                gameRunning = false;
+            else if(event.type == SDL_KEYDOWN && event.key.repeat == false){
+                gamePlayer.increaseVelocity(event.key.keysym);
+            }
+            else if(event.type == SDL_KEYUP && event.key.repeat == false){
+                gamePlayer.decreaseVelocity(event.key.keysym);
+            }
         }
-        gameLogic();
+        SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255);
+        SDL_RenderClear(gameRenderer);
+
+        gamePlayer.movePlayer();
+        camera = {gamePlayer.getX() - WINDOW_WIDTH / 2, gamePlayer.getY() - WINDOW_HEIGHT / 2};
+
+        background.renderTiles(gameRenderer, gamePlayer.getX(), gamePlayer.getY(), camera);
+        gamePlayer.render(gameRenderer, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+
+        SDL_RenderPresent(gameRenderer);
     }
     closeGame();
     return 0;
