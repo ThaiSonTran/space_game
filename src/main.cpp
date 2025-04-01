@@ -4,12 +4,18 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <cmath>
 #include <player.h>
 #include <viewport.h>
 #include <background.h>
 
 const int WINDOW_WIDTH = 1300;
 const int WINDOW_HEIGHT = 700;
+
+const int WIN_MID_WIDTH = WINDOW_WIDTH / 2;
+const int WIN_MID_HEIGHT = WINDOW_HEIGHT / 2;
+
+const int PI = 3.14159265359;
 
 SDL_Window *gameWindow;
 SDL_Renderer* gameRenderer;
@@ -78,7 +84,6 @@ bool loadMedia(){
 
     return true;
 }
-
 int main(int argc, char* args[]){
     if(!initGame()){
         printf("Failed to initialize game\n");
@@ -105,15 +110,22 @@ int main(int argc, char* args[]){
         SDL_RenderClear(gameRenderer);
 
         gamePlayer.movePlayer();
-        camera = {gamePlayer.getX() - WINDOW_WIDTH / 2, gamePlayer.getY() - WINDOW_HEIGHT / 2};
+        camera = {gamePlayer.getX() - WIN_MID_WIDTH, gamePlayer.getY() - WIN_MID_HEIGHT};
 
         for(int i = 0; i < 4; ++i)
             background[i].renderSurroundedTiles(gameRenderer, camera);
 
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        int mouseDirX = mouseX - WIN_MID_WIDTH;
+        int mouseDirY = mouseY - WIN_MID_HEIGHT;
+        if(mouseDirX == 0 && mouseDirY == 0) mouseDirX = 1;
+        double angle = 90 + 180 * std::atan2(mouseDirY, mouseDirX) / PI;
         gamePlayer.render(
             gameRenderer,
-            WINDOW_WIDTH / 2 - gamePlayer.getTextureWidth() / 2,
-            WINDOW_HEIGHT / 2 - gamePlayer.getTextureHeight() / 2
+            WIN_MID_WIDTH - gamePlayer.getTextureWidth() / 2,
+            WIN_MID_HEIGHT - gamePlayer.getTextureHeight() / 2,
+            angle
         );
 
         SDL_RenderPresent(gameRenderer);

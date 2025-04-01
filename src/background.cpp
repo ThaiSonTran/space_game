@@ -33,8 +33,8 @@ bool TiledBackground::loadTexture(SDL_Renderer *renderer, std::string path){
         printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
         return false;
     }
-    tileWidth = 4 * loadedSurface->w;
-    tileHeight= 4 * loadedSurface->h;
+    tileWidth = SCALE_RATIO * loadedSurface->w;
+    tileHeight = SCALE_RATIO * loadedSurface->h;
     SDL_FreeSurface(loadedSurface);
     tileTexture = newTexture;
 

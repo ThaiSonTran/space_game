@@ -45,16 +45,16 @@ bool Player::loadTexture(SDL_Renderer *renderer, std::string path){
         return false;
     }
 
-    textureWidth = loadedSurface->w;
-    textureHeight = loadedSurface->h;
+    textureWidth = 0.5 * loadedSurface->w;
+    textureHeight = 0.5 * loadedSurface->h;
     SDL_FreeSurface(loadedSurface);
 	shipTexture = newTexture;
 
 	return shipTexture != NULL;
 }
-void Player::render(SDL_Renderer *renderer, int x, int y){
+void Player::render(SDL_Renderer *renderer, int x, int y, double angle){
 	SDL_Rect renderQuad = {x, y, textureWidth, textureHeight};
-	SDL_RenderCopy(renderer, shipTexture, NULL, &renderQuad);
+	SDL_RenderCopyEx(renderer, shipTexture, NULL, &renderQuad, angle, NULL, SDL_FLIP_NONE);
 }
 void Player::increaseVelocity(const int key_pressed){
     switch(key_pressed){

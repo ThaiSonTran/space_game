@@ -3,6 +3,7 @@
 
 class TiledBackground{
 public:
+    static const int SCALE_RATIO = 5;
     TiledBackground();
     void clearData();
     void setParalaxStrength(const double _paralaxStrength);

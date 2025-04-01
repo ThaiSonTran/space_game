@@ -13,7 +13,7 @@ public:
     int getTextureHeight();
 
     bool loadTexture(SDL_Renderer *renderer, std::string path);
-    void render(SDL_Renderer *renderer, int x, int y);
+    void render(SDL_Renderer *renderer, int x, int y, double angle);
 
     void increaseVelocity(const int key_pressed);
     void decreaseVelocity(const int key_pressed);
