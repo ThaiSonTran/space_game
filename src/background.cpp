@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <string>
 #include <SDL_image.h>
-#include "viewport.h"
+#include "vector2d.h"
 #include "background.h"
 #include <iostream>
 
@@ -44,19 +44,22 @@ void TiledBackground::renderTile(SDL_Renderer *renderer, int x, int y){
     SDL_Rect renderQuad = {x, y, tileWidth, tileHeight};
     SDL_RenderCopy(renderer, tileTexture, NULL, &renderQuad);
 }
-void TiledBackground::renderSurroundedTiles(SDL_Renderer *renderer, ViewPort camera){
-    int backgroundShiftX = camera.x * paralaxStrength;
-    int backgroundShiftY = camera.y * paralaxStrength;
+void TiledBackground::renderSurroundedTiles(SDL_Renderer *renderer, Vector2D camera){
+    Vector2D backgroundShift = camera * paralaxStrength;
     for(int i = -1; i <= 1; ++i){
         for(int j = -1; j <= 1; ++j){
 
-            int tileIndexX = i + (camera.x + backgroundShiftX) / tileWidth;
-            int tileIndexY = j + (camera.y + backgroundShiftY) / tileHeight;
+            Vector2D tileIndex(
+                i + (camera.x + backgroundShift.x) / tileWidth,
+                j + (camera.y + backgroundShift.y) / tileHeight
+            );
 
-            int adjustedTileX = tileIndexX * tileWidth - backgroundShiftX;
-            int adjustedTileY = tileIndexY * tileHeight - backgroundShiftY;
+            Vector2D adjustedTile(
+                tileIndex.x * tileWidth - backgroundShift.x,
+                tileIndex.y * tileHeight - backgroundShift.y
+            );
 
-            renderTile(renderer, adjustedTileX - camera.x, adjustedTileY - camera.y);
+            renderTile(renderer, adjustedTile.x - camera.x, adjustedTile.y - camera.y);
         }
     }
 }

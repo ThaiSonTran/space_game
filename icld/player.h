@@ -9,6 +9,7 @@ public:
 
     int getX();
     int getY();
+    Vector2D getPosition();
     int getTextureWidth();
     int getTextureHeight();
 
@@ -20,8 +21,9 @@ public:
     void movePlayer();
 
 private:
-    int x, y;
-    int vX, vY;
+    //int x, y;
+    //int vX, vY;
+    Vector2D position, velocity;
     SDL_Texture *shipTexture;
     int textureHeight, textureWidth;
 };

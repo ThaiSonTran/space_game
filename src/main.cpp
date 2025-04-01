@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include <string>
 #include <cmath>
+#include <list>
+#include <vector2d.h>
+#include <bullet.h>
 #include <player.h>
-#include <viewport.h>
 #include <background.h>
 
 const int WINDOW_WIDTH = 1300;
@@ -22,7 +24,8 @@ SDL_Renderer* gameRenderer;
 
 Player gamePlayer;
 TiledBackground background[4];
-ViewPort camera;
+Vector2D camera;
+std::list<Bullet> bulletList;
 
 bool initGame(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) return false;
@@ -67,6 +70,17 @@ void closeGame(){
     SDL_Quit();
     IMG_Quit();
 }
+//texture atlas
+//textureWidth textureHeight
+//atlasCellSize
+//numCellWide numCellTall
+//clip = {cellIndexX, cellIndexY, atlasCellSize, atlasCellSize}
+//bulletAtlas
+//WinCoordX = bulletX - camera.x
+//WinCoordY = bulletY - camera.y
+//renderQuad = {WinCoordX - atlasCellSize / 2, WinCoordY - atlasCellSize / 2}
+//SDL_RenderCopy(gameRenderer, bulletAtlas, clip, something about bullet pos square that take bullet pos as center)
+//
 bool loadMedia(){
     if(!gamePlayer.loadTexture(gameRenderer, "resources/green.png")) return false;
 
@@ -97,21 +111,27 @@ int main(int argc, char* args[]){
     while(gameRunning){
         SDL_Event event;
         while(SDL_PollEvent(&event)){
-            if(event.type == SDL_QUIT)
+            if(event.type == SDL_QUIT){
                 gameRunning = false;
+            }
             else if(event.type == SDL_KEYDOWN && event.key.repeat == false){
                 gamePlayer.increaseVelocity(event.key.keysym.sym);
             }
             else if(event.type == SDL_KEYUP && event.key.repeat == false){
                 gamePlayer.decreaseVelocity(event.key.keysym.sym);
             }
+            else if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT){
+                //add bullet according to mouse dir
+                //insert(bullet(player.x, player.y, mouseDirX, mouseDirY, angle)
+
+            }
+
         }
         SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255); //black
         SDL_RenderClear(gameRenderer);
 
         gamePlayer.movePlayer();
-        camera = {gamePlayer.getX() - WIN_MID_WIDTH, gamePlayer.getY() - WIN_MID_HEIGHT};
-
+        camera = gamePlayer.getPosition() - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
         for(int i = 0; i < 4; ++i)
             background[i].renderSurroundedTiles(gameRenderer, camera);
 
@@ -127,7 +147,7 @@ int main(int argc, char* args[]){
             WIN_MID_HEIGHT - gamePlayer.getTextureHeight() / 2,
             angle
         );
-
+        //render bulletlist
         SDL_RenderPresent(gameRenderer);
     }
     closeGame();

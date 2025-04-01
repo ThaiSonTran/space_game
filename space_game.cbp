@@ -13,7 +13,11 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="E:/_Areas/College life/LTNC_code/space_game/icld" />
 				</Compiler>
+				<Linker>
+					<Add directory="E:/_Areas/College life/LTNC_code/space_game/icld" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/space_game" prefix_auto="1" extension_auto="1" />
@@ -32,7 +36,16 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="main.cpp" />
+		<Unit filename="icld/background.h" />
+		<Unit filename="icld/bullet.h" />
+		<Unit filename="icld/player.h" />
+		<Unit filename="icld/vector2d.h" />
+		<Unit filename="icld/viewport.h" />
+		<Unit filename="src/background.cpp" />
+		<Unit filename="src/bullet.cpp" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/player.cpp" />
+		<Unit filename="src/vector2d.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

@@ -1,20 +1,22 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <player.h>
+#include "vector2d.h"
+#include "player.h"
 
 
 Player::Player(){
-    x = INT_MAX / 2;
-    y = INT_MAX / 2;
-    vX = 0;
-    vY = 0;
+    position = Vector2D(INT_MAX / 2, INT_MAX / 2);
+    velocity = Vector2D(0, 0);
 }
 int Player::getX(){
-    return this->x;
+    return this->position.x;
 }
 int Player::getY(){
-    return this->y;
+    return this->position.y;
+}
+Vector2D Player::getPosition(){
+    return this->position;
 }
 int Player::getTextureWidth(){
     return this->textureWidth;
@@ -58,21 +60,20 @@ void Player::render(SDL_Renderer *renderer, int x, int y, double angle){
 }
 void Player::increaseVelocity(const int key_pressed){
     switch(key_pressed){
-    case SDLK_s: vY += Player::VEL; break;
-    case SDLK_w: vY -= Player::VEL; break;
-    case SDLK_d: vX += Player::VEL; break;
-    case SDLK_a: vX -= Player::VEL; break;
+    case SDLK_s: velocity.y += Player::VEL; break;
+    case SDLK_w: velocity.y -= Player::VEL; break;
+    case SDLK_d: velocity.x += Player::VEL; break;
+    case SDLK_a: velocity.x -= Player::VEL; break;
     }
 }
 void Player::decreaseVelocity(const int key_pressed){
     switch(key_pressed){
-    case SDLK_s: vY -= Player::VEL; break;
-    case SDLK_w: vY += Player::VEL; break;
-    case SDLK_d: vX -= Player::VEL; break;
-    case SDLK_a: vX += Player::VEL; break;
+    case SDLK_s: velocity.y -= Player::VEL; break;
+    case SDLK_w: velocity.y += Player::VEL; break;
+    case SDLK_d: velocity.x -= Player::VEL; break;
+    case SDLK_a: velocity.x += Player::VEL; break;
     }
 }
 void Player::movePlayer(){
-    x += vX;
-    y += vY;
+    position += velocity;
 }
