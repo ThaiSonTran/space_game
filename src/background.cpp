@@ -8,13 +8,16 @@
 TiledBackground::TiledBackground(){
 
 }
-void TiledBackground::resetData(){
-    if(texture == NULL ) return;
-    SDL_DestroyTexture(texture);
-    texture = NULL;
+void TiledBackground::clearData(){
+    if(tileTexture == NULL ) return;
+    SDL_DestroyTexture(tileTexture);
+    tileTexture = NULL;
+}
+void TiledBackground::setParalaxStrength(const double _paralaxStrength){
+    paralaxStrength = _paralaxStrength;
 }
 bool TiledBackground::loadTexture(SDL_Renderer *renderer, std::string path){
-    resetData();
+    clearData();
     SDL_Texture* newTexture = NULL;
     SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 
@@ -30,30 +33,30 @@ bool TiledBackground::loadTexture(SDL_Renderer *renderer, std::string path){
         printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
         return false;
     }
-
-    textureWidth = 4 * loadedSurface->w;
-    textureHeight = 4 * loadedSurface->h;
+    tileWidth = 4 * loadedSurface->w;
+    tileHeight= 4 * loadedSurface->h;
     SDL_FreeSurface(loadedSurface);
-    texture = newTexture;
+    tileTexture = newTexture;
 
-    return texture != NULL;
+    return tileTexture != NULL;
 }
-void TiledBackground::render(SDL_Renderer *renderer, int x, int y){
-    SDL_Rect renderQuad = {x, y, textureWidth, textureHeight};
-    SDL_RenderCopy(renderer, texture, NULL, &renderQuad);
+void TiledBackground::renderTile(SDL_Renderer *renderer, int x, int y){
+    SDL_Rect renderQuad = {x, y, tileWidth, tileHeight};
+    SDL_RenderCopy(renderer, tileTexture, NULL, &renderQuad);
 }
-void TiledBackground::renderTiles(SDL_Renderer *renderer, int playerX, int playerY, ViewPort camera){
-    posX = playerX / textureWidth;
-    posY = playerY / textureHeight;
-    for(int offsetPosX = -1; offsetPosX <= 1; ++offsetPosX){
-        for(int offsetPosY = -1; offsetPosY <= 1; ++offsetPosY){
-            int renderX = (posX + offsetPosX) * textureWidth - camera.x;
-            int renderY = (posY + offsetPosY) * textureHeight - camera.y;
-            render(renderer, renderX, renderY);
-            std::cout << (posX + offsetPosX) * textureWidth << ' ' << (posY + offsetPosY) * textureHeight << ":";
+void TiledBackground::renderSurroundedTiles(SDL_Renderer *renderer, ViewPort camera){
+    int backgroundShiftX = camera.x * paralaxStrength;
+    int backgroundShiftY = camera.y * paralaxStrength;
+    for(int i = -1; i <= 1; ++i){
+        for(int j = -1; j <= 1; ++j){
+
+            int tileIndexX = i + (camera.x + backgroundShiftX) / tileWidth;
+            int tileIndexY = j + (camera.y + backgroundShiftY) / tileHeight;
+
+            int adjustedTileX = tileIndexX * tileWidth - backgroundShiftX;
+            int adjustedTileY = tileIndexY * tileHeight - backgroundShiftY;
+
+            renderTile(renderer, adjustedTileX - camera.x, adjustedTileY - camera.y);
         }
     }
-    std::cout << camera.x << ' ' << camera.y;
-    std::cout << "()" << playerX << ' ' << playerY;
-    std::cout << '\n';
 }

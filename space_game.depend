@@ -2,7 +2,7 @@
 1584205420 source:e:\_areas\college life\ltnc_code\space_game\main.cpp
 	<iostream>
 
-1743443138 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
+1743487428 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
@@ -15,15 +15,15 @@
 
 1743442465 e:\_areas\college life\ltnc_code\space_game\icld\globals.h
 
-1743442364 e:\_areas\college life\ltnc_code\space_game\icld\player.h
+1743485588 e:\_areas\college life\ltnc_code\space_game\icld\player.h
 
-1743444740 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
+1743485588 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
 	<string>
 	<SDL.h>
 	<SDL_image.h>
 	<player.h>
 
-1743444526 source:e:\_areas\college life\ltnc_code\space_game\src\background.cpp
+1743485707 source:e:\_areas\college life\ltnc_code\space_game\src\background.cpp
 	<SDL.h>
 	<string>
 	<SDL_image.h>
@@ -33,5 +33,5 @@
 
 1743439779 e:\_areas\college life\ltnc_code\space_game\icld\viewport.h
 
-1743440693 e:\_areas\college life\ltnc_code\space_game\icld\background.h
+1743485707 e:\_areas\college life\ltnc_code\space_game\icld\background.h
 

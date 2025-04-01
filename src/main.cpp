@@ -15,7 +15,7 @@ SDL_Window *gameWindow;
 SDL_Renderer* gameRenderer;
 
 Player gamePlayer;
-TiledBackground background;
+TiledBackground background[4];
 ViewPort camera;
 
 bool initGame(){
@@ -63,7 +63,19 @@ void closeGame(){
 }
 bool loadMedia(){
     if(!gamePlayer.loadTexture(gameRenderer, "resources/green.png")) return false;
-    if(!background.loadTexture(gameRenderer, "resources/background1.png")) return false;
+
+    if(!background[0].loadTexture(gameRenderer, "resources/background1.png")) return false;
+    background[0].setParalaxStrength(0);
+
+    if(!background[1].loadTexture(gameRenderer, "resources/background2.png")) return false;
+    background[1].setParalaxStrength(0.2);
+
+    if(!background[2].loadTexture(gameRenderer, "resources/background3.png")) return false;
+    background[2].setParalaxStrength(0.4);
+
+    if(!background[3].loadTexture(gameRenderer, "resources/background4.png")) return false;
+    background[3].setParalaxStrength(0.6);
+
     return true;
 }
 
@@ -83,20 +95,26 @@ int main(int argc, char* args[]){
             if(event.type == SDL_QUIT)
                 gameRunning = false;
             else if(event.type == SDL_KEYDOWN && event.key.repeat == false){
-                gamePlayer.increaseVelocity(event.key.keysym);
+                gamePlayer.increaseVelocity(event.key.keysym.sym);
             }
             else if(event.type == SDL_KEYUP && event.key.repeat == false){
-                gamePlayer.decreaseVelocity(event.key.keysym);
+                gamePlayer.decreaseVelocity(event.key.keysym.sym);
             }
         }
-        SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255); //black
         SDL_RenderClear(gameRenderer);
 
         gamePlayer.movePlayer();
         camera = {gamePlayer.getX() - WINDOW_WIDTH / 2, gamePlayer.getY() - WINDOW_HEIGHT / 2};
 
-        background.renderTiles(gameRenderer, gamePlayer.getX(), gamePlayer.getY(), camera);
-        gamePlayer.render(gameRenderer, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+        for(int i = 0; i < 4; ++i)
+            background[i].renderSurroundedTiles(gameRenderer, camera);
+
+        gamePlayer.render(
+            gameRenderer,
+            WINDOW_WIDTH / 2 - gamePlayer.getTextureWidth() / 2,
+            WINDOW_HEIGHT / 2 - gamePlayer.getTextureHeight() / 2
+        );
 
         SDL_RenderPresent(gameRenderer);
     }

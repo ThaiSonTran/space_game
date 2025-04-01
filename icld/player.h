@@ -5,14 +5,20 @@ class Player{
 public:
     static const int VEL = 15;
     Player();
-    void freeData();
+    void clearData();
+
     int getX();
     int getY();
+    int getTextureWidth();
+    int getTextureHeight();
+
     bool loadTexture(SDL_Renderer *renderer, std::string path);
     void render(SDL_Renderer *renderer, int x, int y);
-    void increaseVelocity(const SDL_Keysym key_pressed);
-    void decreaseVelocity(const SDL_Keysym key_pressed);
+
+    void increaseVelocity(const int key_pressed);
+    void decreaseVelocity(const int key_pressed);
     void movePlayer();
+
 private:
     int x, y;
     int vX, vY;

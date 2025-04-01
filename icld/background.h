@@ -4,14 +4,15 @@
 class TiledBackground{
 public:
     TiledBackground();
-    void resetData();
+    void clearData();
+    void setParalaxStrength(const double _paralaxStrength);
     bool loadTexture(SDL_Renderer *renderer, std::string path);
-    void render(SDL_Renderer *renderer, int x, int y);
-    void renderTiles(SDL_Renderer *renderer, int playerX, int playerY, ViewPort camera);
+    void renderTile(SDL_Renderer *renderer, int x, int y);
+    void renderSurroundedTiles(SDL_Renderer *renderer, ViewPort camera);
 private:
-    int posX, posY;
-    SDL_Texture *texture;
-    int textureHeight, textureWidth;
+    double paralaxStrength;
+    SDL_Texture *tileTexture;
+    int tileHeight, tileWidth;
 };
 
 #endif
