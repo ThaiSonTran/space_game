@@ -77,32 +77,20 @@ void closeGame(){
     SDL_Quit();
     IMG_Quit();
 }
-//texture atlas
-//textureWidth textureHeight
-//atlasCellSize
-//numCellWide numCellTall
-//bulletrender(cellIndexX, cellIndexY, bulletAtlas, camera)
-//clip = {cellIndexX, cellIndexY, atlasCellSize, atlasCellSize}
-//bulletAtlas
-//WinCoordX = bulletX - camera.x
-//WinCoordY = bulletY - camera.y
-//renderQuad = {WinCoordX - atlasCellSize / 2, WinCoordY - atlasCellSize / 2}
-//SDL_RenderCopy(gameRenderer, bulletAtlas, clip,  square that take bullet pos as center)
-//
 bool loadMedia(){
     if(!gamePlayer.loadTexture(gameRenderer, "resources/green.png")) return false;
 
     if(!background[0].loadTexture(gameRenderer, "resources/background1.png")) return false;
-    background[0].setParalaxStrength(0);
+    background[0].setParallaxStrength(0);
 
     if(!background[1].loadTexture(gameRenderer, "resources/background2.png")) return false;
-    background[1].setParalaxStrength(0.2);
+    background[1].setParallaxStrength(0.2);
 
     if(!background[2].loadTexture(gameRenderer, "resources/background3.png")) return false;
-    background[2].setParalaxStrength(0.4);
+    background[2].setParallaxStrength(0.4);
 
     if(!background[3].loadTexture(gameRenderer, "resources/background4.png")) return false;
-    background[3].setParalaxStrength(0.6);
+    background[3].setParallaxStrength(0.6);
 
     if(!bulletAtlas.loadTexture(gameRenderer, "resources/projectiles.png")) return false;
     bulletAtlas.calculateCellSize(3, 2);
@@ -127,15 +115,14 @@ int main(int argc, char* args[]){
                 gameRunning = false;
             }
             else if(event.type == SDL_KEYDOWN && event.key.repeat == false){
-                gamePlayer.increaseVelocity(event.key.keysym.sym);
+                gamePlayer.accelerateInDirection(event.key.keysym.sym);
             }
             else if(event.type == SDL_KEYUP && event.key.repeat == false){
-                gamePlayer.decreaseVelocity(event.key.keysym.sym);
+                gamePlayer.decelerateInDirection(event.key.keysym.sym);
             }
             else if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT){
                 ++bulletToAdd;
             }
-
         }
         SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255); //black
         SDL_RenderClear(gameRenderer);
@@ -151,8 +138,6 @@ int main(int argc, char* args[]){
         Vector2D mouseDir = mousePos - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
         if(mouseDir.x == 0 && mouseDir.y == 0) mouseDir.x = 1;
         double angle = std::atan2((double)mouseDir.y, (double)mouseDir.x) * 180 / PI + 90;
-        //render bulletlist, each bullet rendered based on their position
-        //bulletrender(cellIndexX, cellIndexY, bulletAtlas, camera)
         for(; bulletToAdd; --bulletToAdd){
             bulletList.push_back(Bullet(
                 gamePlayer.getX(), gamePlayer.getY(),

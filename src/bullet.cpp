@@ -13,10 +13,6 @@ Bullet::Bullet(int _x, int _y, int _dirX, int _dirY, double _rotateAngle){
     rotateAngle = _rotateAngle;
 }
 void Bullet::renderBullet(SDL_Renderer *renderer, int cellIndexX, int cellIndexY, TextureAtlas &bulletAtlas, Vector2D &camera){
-    //WinCoordX = bulletX - camera.x
-    //WinCoordY = bulletY - camera.y
-    //renderQuad = {WinCoordX - atlasCellSize / 2, WinCoordY - atlasCellSize / 2}
-    //SDL_RenderCopy(gameRenderer, bulletAtlas, clip,  square that take bullet pos as center)
     const double ScaleRatio = 0.1;
 
     Vector2D WinCoord = position - camera;
@@ -38,9 +34,9 @@ void Bullet::moveBullet(){
         position.x += 25;
         return;
     }
-    double deltax = direction.x / len;
-    double deltay = direction.y / len;
-    position += Vector2D(int(deltax * 25), int(deltay * 25));
+    double deltaX = direction.x / len;
+    double deltaY = direction.y / len;
+    position += Vector2D(int(deltaX * 25), int(deltaY * 25));
 }
 bool Bullet::isTooFar(int x, int y){
     int deltaX = position.x - x;

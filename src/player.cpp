@@ -58,7 +58,7 @@ void Player::render(SDL_Renderer *renderer, int x, int y, double angle){
 	SDL_Rect renderQuad = {x, y, textureWidth, textureHeight};
 	SDL_RenderCopyEx(renderer, shipTexture, NULL, &renderQuad, angle, NULL, SDL_FLIP_NONE);
 }
-void Player::increaseVelocity(const int key_pressed){
+void Player::accelerateInDirection(const int key_pressed){
     switch(key_pressed){
     case SDLK_s: velocity.y += Player::VEL; break;
     case SDLK_w: velocity.y -= Player::VEL; break;
@@ -66,7 +66,7 @@ void Player::increaseVelocity(const int key_pressed){
     case SDLK_a: velocity.x -= Player::VEL; break;
     }
 }
-void Player::decreaseVelocity(const int key_pressed){
+void Player::decelerateInDirection(const int key_pressed){
     switch(key_pressed){
     case SDLK_s: velocity.y -= Player::VEL; break;
     case SDLK_w: velocity.y += Player::VEL; break;

@@ -16,8 +16,8 @@ public:
     bool loadTexture(SDL_Renderer *renderer, std::string path);
     void render(SDL_Renderer *renderer, int x, int y, double angle);
 
-    void increaseVelocity(const int key_pressed);
-    void decreaseVelocity(const int key_pressed);
+    void accelerateInDirection(const int key_pressed);
+    void decelerateInDirection(const int key_pressed);
     void movePlayer();
 
 private:

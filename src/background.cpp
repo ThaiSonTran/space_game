@@ -13,8 +13,8 @@ void TiledBackground::clearData(){
     SDL_DestroyTexture(tileTexture);
     tileTexture = NULL;
 }
-void TiledBackground::setParalaxStrength(const double _paralaxStrength){
-    paralaxStrength = _paralaxStrength;
+void TiledBackground::setParallaxStrength(const double strengthFactor){
+    parallaxStrength = strengthFactor;
 }
 bool TiledBackground::loadTexture(SDL_Renderer *renderer, std::string path){
     clearData();
@@ -45,13 +45,13 @@ void TiledBackground::renderTile(SDL_Renderer *renderer, int x, int y){
     SDL_RenderCopy(renderer, tileTexture, NULL, &renderQuad);
 }
 void TiledBackground::renderSurroundedTiles(SDL_Renderer *renderer, Vector2D &camera){
-    Vector2D backgroundShift = camera * paralaxStrength;
-    for(int i = -1; i <= 1; ++i){
-        for(int j = -1; j <= 1; ++j){
+    Vector2D backgroundShift = camera * parallaxStrength;
+    for(int offsetIndexX = -1; offsetIndexX <= 1; ++offsetIndexX){
+        for(int offsetIndexY = -1; offsetIndexY <= 1; ++offsetIndexY){
 
             Vector2D tileIndex(
-                i + (camera.x + backgroundShift.x) / tileWidth,
-                j + (camera.y + backgroundShift.y) / tileHeight
+                offsetIndexX + (camera.x + backgroundShift.x) / tileWidth,
+                offsetIndexY + (camera.y + backgroundShift.y) / tileHeight
             );
 
             Vector2D adjustedTile(
