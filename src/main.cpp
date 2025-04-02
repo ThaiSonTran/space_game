@@ -6,10 +6,11 @@
 #include <string>
 #include <cmath>
 #include <list>
-#include <vector2d.h>
-#include <bullet.h>
-#include <player.h>
-#include <background.h>
+#include "vector2d.h"
+#include "textureatlas.h"
+#include "bullet.h"
+#include "player.h"
+#include "background.h"
 
 const int WINDOW_WIDTH = 1300;
 const int WINDOW_HEIGHT = 700;
@@ -26,7 +27,13 @@ Player gamePlayer;
 TiledBackground background[4];
 Vector2D camera;
 std::list<Bullet> bulletList;
-
+TextureAtlas bulletAtlas;
+TextureAtlas enemyAtlas;
+//enemy class
+//list<enemy>
+//spawn enemy after 5 frame
+//shipType
+//
 bool initGame(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) return false;
 
@@ -74,12 +81,13 @@ void closeGame(){
 //textureWidth textureHeight
 //atlasCellSize
 //numCellWide numCellTall
+//bulletrender(cellIndexX, cellIndexY, bulletAtlas, camera)
 //clip = {cellIndexX, cellIndexY, atlasCellSize, atlasCellSize}
 //bulletAtlas
 //WinCoordX = bulletX - camera.x
 //WinCoordY = bulletY - camera.y
 //renderQuad = {WinCoordX - atlasCellSize / 2, WinCoordY - atlasCellSize / 2}
-//SDL_RenderCopy(gameRenderer, bulletAtlas, clip, something about bullet pos square that take bullet pos as center)
+//SDL_RenderCopy(gameRenderer, bulletAtlas, clip,  square that take bullet pos as center)
 //
 bool loadMedia(){
     if(!gamePlayer.loadTexture(gameRenderer, "resources/green.png")) return false;
@@ -96,6 +104,9 @@ bool loadMedia(){
     if(!background[3].loadTexture(gameRenderer, "resources/background4.png")) return false;
     background[3].setParalaxStrength(0.6);
 
+    if(!bulletAtlas.loadTexture(gameRenderer, "resources/projectiles.png")) return false;
+    bulletAtlas.calculateCellSize(3, 2);
+
     return true;
 }
 int main(int argc, char* args[]){
@@ -110,6 +121,7 @@ int main(int argc, char* args[]){
     bool gameRunning = true;
     while(gameRunning){
         SDL_Event event;
+        int bulletToAdd = 0;
         while(SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
                 gameRunning = false;
@@ -121,9 +133,7 @@ int main(int argc, char* args[]){
                 gamePlayer.decreaseVelocity(event.key.keysym.sym);
             }
             else if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT){
-                //add bullet according to mouse dir
-                //insert(bullet(player.x, player.y, mouseDirX, mouseDirY, angle)
-
+                ++bulletToAdd;
             }
 
         }
@@ -132,22 +142,42 @@ int main(int argc, char* args[]){
 
         gamePlayer.movePlayer();
         camera = gamePlayer.getPosition() - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
+
         for(int i = 0; i < 4; ++i)
             background[i].renderSurroundedTiles(gameRenderer, camera);
 
-        int mouseX, mouseY;
-        SDL_GetMouseState(&mouseX, &mouseY);
-        int mouseDirX = mouseX - WIN_MID_WIDTH;
-        int mouseDirY = mouseY - WIN_MID_HEIGHT;
-        if(mouseDirX == 0 && mouseDirY == 0) mouseDirX = 1;
-        double angle = 90 + 180 * std::atan2(mouseDirY, mouseDirX) / PI;
+        Vector2D mousePos;
+        SDL_GetMouseState(&mousePos.x, &mousePos.y);
+        Vector2D mouseDir = mousePos - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
+        if(mouseDir.x == 0 && mouseDir.y == 0) mouseDir.x = 1;
+        double angle = std::atan2((double)mouseDir.y, (double)mouseDir.x) * 180 / PI + 90;
+        //render bulletlist, each bullet rendered based on their position
+        //bulletrender(cellIndexX, cellIndexY, bulletAtlas, camera)
+        for(; bulletToAdd; --bulletToAdd){
+            bulletList.push_back(Bullet(
+                gamePlayer.getX(), gamePlayer.getY(),
+                mouseDir.x, mouseDir.y, angle
+            ));
+        }
+        for(auto it = bulletList.begin(); it != bulletList.end();){
+            Bullet &bullet = *it;
+            bullet.renderBullet(gameRenderer, 2, 1, bulletAtlas, camera);
+
+            if(bullet.isTooFar(gamePlayer.getX(), gamePlayer.getY())){
+                it = bulletList.erase(it);
+                continue;
+            }
+
+            bullet.moveBullet();
+            ++it;
+
+        }
         gamePlayer.render(
             gameRenderer,
             WIN_MID_WIDTH - gamePlayer.getTextureWidth() / 2,
             WIN_MID_HEIGHT - gamePlayer.getTextureHeight() / 2,
             angle
         );
-        //render bulletlist
         SDL_RenderPresent(gameRenderer);
     }
     closeGame();

@@ -4,11 +4,13 @@ class Bullet{
 public:
     //bool loadTexture(SDL_Renderer *renderer, std::string path);
     //void render(SDL_Renderer *renderer, int x, int y);
-
+    Bullet(int _x, int _y, int _dirX, int _dirY, double _rotateAngle);
+    void renderBullet(SDL_Renderer *renderer, int cellIndexX, int cellIndexY, TextureAtlas &bulletAtlas, Vector2D &camera);
+    void moveBullet();
+    bool isTooFar(int x, int y);
 private:
-    int x, y;
-    int dirX, dirY;
-    //SDL_Texture bulletTexture;
-    int textureWidth, textureHeight;
+    Vector2D position;
+    Vector2D direction;
+    double rotateAngle;
 };
 #endif // BULLET_H

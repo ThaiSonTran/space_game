@@ -39,12 +39,13 @@
 		<Unit filename="icld/background.h" />
 		<Unit filename="icld/bullet.h" />
 		<Unit filename="icld/player.h" />
+		<Unit filename="icld/textureatlas.h" />
 		<Unit filename="icld/vector2d.h" />
-		<Unit filename="icld/viewport.h" />
 		<Unit filename="src/background.cpp" />
 		<Unit filename="src/bullet.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/player.cpp" />
+		<Unit filename="src/textureatlas.cpp" />
 		<Unit filename="src/vector2d.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

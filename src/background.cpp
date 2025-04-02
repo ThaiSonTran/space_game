@@ -44,7 +44,7 @@ void TiledBackground::renderTile(SDL_Renderer *renderer, int x, int y){
     SDL_Rect renderQuad = {x, y, tileWidth, tileHeight};
     SDL_RenderCopy(renderer, tileTexture, NULL, &renderQuad);
 }
-void TiledBackground::renderSurroundedTiles(SDL_Renderer *renderer, Vector2D camera){
+void TiledBackground::renderSurroundedTiles(SDL_Renderer *renderer, Vector2D &camera){
     Vector2D backgroundShift = camera * paralaxStrength;
     for(int i = -1; i <= 1; ++i){
         for(int j = -1; j <= 1; ++j){

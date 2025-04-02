@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <iostream>
-#include "Vector2D.h"
+#include "vector2D.h"
 
 Vector2D::Vector2D(int x, int y) : x(x), y(y) {}
 
@@ -23,7 +23,7 @@ Vector2D& Vector2D::operator*=(double scalar){
 }
 
 Vector2D& Vector2D::operator/=(double scalar){
-    if (scalar == 0) {
+    if (scalar == 0){
         throw std::runtime_error("Division by zero");
     }
     x /= scalar;
@@ -44,7 +44,7 @@ Vector2D Vector2D::operator*(double scalar) const {
 }
 
 Vector2D Vector2D::operator/(double scalar) const {
-    if (scalar == 0) {
+    if (scalar == 0){
         throw std::runtime_error("Division by zero");
     }
     return Vector2D(x / scalar, y / scalar);
