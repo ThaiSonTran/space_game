@@ -14,7 +14,7 @@ public:
     int getTextureHeight();
 
     bool loadTexture(SDL_Renderer *renderer, std::string path);
-    void render(SDL_Renderer *renderer, int x, int y, double angle);
+    void render(SDL_Renderer *renderer, int screenX, int screenY, double angle);
 
     void accelerateInDirection(const int key_pressed);
     void decelerateInDirection(const int key_pressed);

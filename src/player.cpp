@@ -54,8 +54,8 @@ bool Player::loadTexture(SDL_Renderer *renderer, std::string path){
 
 	return shipTexture != NULL;
 }
-void Player::render(SDL_Renderer *renderer, int x, int y, double angle){
-	SDL_Rect renderQuad = {x, y, textureWidth, textureHeight};
+void Player::render(SDL_Renderer *renderer, int screenX, int screenY, double angle){
+	SDL_Rect renderQuad = {screenX, screenY, textureWidth, textureHeight};
 	SDL_RenderCopyEx(renderer, shipTexture, NULL, &renderQuad, angle, NULL, SDL_FLIP_NONE);
 }
 void Player::accelerateInDirection(const int key_pressed){

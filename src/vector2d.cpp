@@ -62,3 +62,4 @@ std::ostream& operator<<(std::ostream& os, const Vector2D& vec){
     os << "(" << vec.x << ", " << vec.y << ")";
     return os;
 }
+//add getMagniture &

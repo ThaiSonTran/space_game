@@ -40,8 +40,8 @@ bool TiledBackground::loadTexture(SDL_Renderer *renderer, std::string path){
 
     return tileTexture != NULL;
 }
-void TiledBackground::renderTile(SDL_Renderer *renderer, int x, int y){
-    SDL_Rect renderQuad = {x, y, tileWidth, tileHeight};
+void TiledBackground::renderTile(SDL_Renderer *renderer, int screenX, int screenY){
+    SDL_Rect renderQuad = {screenX, screenY, tileWidth, tileHeight};
     SDL_RenderCopy(renderer, tileTexture, NULL, &renderQuad);
 }
 void TiledBackground::renderSurroundedTiles(SDL_Renderer *renderer, Vector2D &camera){

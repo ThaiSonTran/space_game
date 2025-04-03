@@ -13,7 +13,7 @@ Bullet::Bullet(int _x, int _y, int _dirX, int _dirY, double _rotateAngle){
     rotateAngle = _rotateAngle;
 }
 void Bullet::renderBullet(SDL_Renderer *renderer, int cellIndexX, int cellIndexY, TextureAtlas &bulletAtlas, Vector2D &camera){
-    const double ScaleRatio = 0.1;
+    const double ScaleRatio = 0.05;
 
     Vector2D WinCoord = position - camera;
     SDL_Rect clip = {

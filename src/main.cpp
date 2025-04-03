@@ -29,11 +29,7 @@ Vector2D camera;
 std::list<Bullet> bulletList;
 TextureAtlas bulletAtlas;
 TextureAtlas enemyAtlas;
-//enemy class
-//list<enemy>
-//spawn enemy after 5 frame
-//shipType
-//
+
 bool initGame(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) return false;
 
@@ -95,6 +91,9 @@ bool loadMedia(){
     if(!bulletAtlas.loadTexture(gameRenderer, "resources/projectiles.png")) return false;
     bulletAtlas.calculateCellSize(3, 2);
 
+    if(!enemyAtlas.loadTexture(gameRenderer, "resources/enemyAtlas.png")) return false;
+    enemyAtlas.calculateCellSize(5, 2);
+
     return true;
 }
 int main(int argc, char* args[]){
@@ -146,7 +145,7 @@ int main(int argc, char* args[]){
         }
         for(auto it = bulletList.begin(); it != bulletList.end();){
             Bullet &bullet = *it;
-            bullet.renderBullet(gameRenderer, 2, 1, bulletAtlas, camera);
+            bullet.renderBullet(gameRenderer, 1, 1, bulletAtlas, camera);
 
             if(bullet.isTooFar(gamePlayer.getX(), gamePlayer.getY())){
                 it = bulletList.erase(it);

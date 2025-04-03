@@ -8,7 +8,7 @@ public:
     void clearData();
     void setParallaxStrength(const double strengthFactor);
     bool loadTexture(SDL_Renderer *renderer, std::string path);
-    void renderTile(SDL_Renderer *renderer, int x, int y);
+    void renderTile(SDL_Renderer *renderer, int screenX, int screenY);
     void renderSurroundedTiles(SDL_Renderer *renderer, Vector2D &camera);
 private:
     double parallaxStrength;
