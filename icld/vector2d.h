@@ -19,6 +19,7 @@ struct Vector2D {
 
     bool operator==(const Vector2D& other) const;
     bool operator!=(const Vector2D& other) const;
+    double magnitude();
 };
 
 #endif

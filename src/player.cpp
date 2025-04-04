@@ -6,23 +6,24 @@
 
 
 Player::Player(){
-    position = Vector2D(INT_MAX / 2, INT_MAX / 2);
+    const int MID_PLAY_FIELD = 4e8;
+    position = Vector2D(MID_PLAY_FIELD, MID_PLAY_FIELD);
     velocity = Vector2D(0, 0);
 }
-int Player::getX(){
+int Player::getXCoord(){
     return this->position.x;
 }
-int Player::getY(){
+int Player::getYCoord(){
     return this->position.y;
 }
 Vector2D Player::getPosition(){
     return this->position;
 }
-int Player::getTextureWidth(){
-    return this->textureWidth;
+int Player::getShipWidth(){
+    return this->shipWidth;
 }
-int Player::getTextureHeight(){
-    return this->textureHeight;
+int Player::getShipHeight(){
+    return this->shipHeight;
 }
 void Player::clearData(){
     if(shipTexture == NULL ) return;
@@ -47,15 +48,15 @@ bool Player::loadTexture(SDL_Renderer *renderer, std::string path){
         return false;
     }
 
-    textureWidth = 0.5 * loadedSurface->w;
-    textureHeight = 0.5 * loadedSurface->h;
+    shipWidth = 0.5 * loadedSurface->w;
+    shipHeight = 0.5 * loadedSurface->h;
     SDL_FreeSurface(loadedSurface);
 	shipTexture = newTexture;
 
 	return shipTexture != NULL;
 }
 void Player::render(SDL_Renderer *renderer, int screenX, int screenY, double angle){
-	SDL_Rect renderQuad = {screenX, screenY, textureWidth, textureHeight};
+	SDL_Rect renderQuad = {screenX, screenY, shipWidth, shipHeight};
 	SDL_RenderCopyEx(renderer, shipTexture, NULL, &renderQuad, angle, NULL, SDL_FLIP_NONE);
 }
 void Player::accelerateInDirection(const int key_pressed){

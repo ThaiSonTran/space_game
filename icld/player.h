@@ -3,15 +3,15 @@
 
 class Player{
 public:
-    static const int VEL = 15;
+    static const int VEL = 15; //15 pixel per frame
     Player();
     void clearData();
 
-    int getX();
-    int getY();
+    int getXCoord();
+    int getYCoord();
     Vector2D getPosition();
-    int getTextureWidth();
-    int getTextureHeight();
+    int getShipWidth();
+    int getShipHeight();
 
     bool loadTexture(SDL_Renderer *renderer, std::string path);
     void render(SDL_Renderer *renderer, int screenX, int screenY, double angle);
@@ -21,11 +21,9 @@ public:
     void movePlayer();
 
 private:
-    //int x, y;
-    //int vX, vY;
     Vector2D position, velocity;
     SDL_Texture *shipTexture;
-    int textureHeight, textureWidth;
+    int shipHeight, shipWidth;
 };
 
 #endif

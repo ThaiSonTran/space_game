@@ -2,7 +2,7 @@
 1584205420 source:e:\_areas\college life\ltnc_code\space_game\main.cpp
 	<iostream>
 
-1743675571 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
+1743777516 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
@@ -16,19 +16,20 @@
 	"bullet.h"
 	"player.h"
 	"background.h"
+	"enemy.h"
 
 1743442465 e:\_areas\college life\ltnc_code\space_game\icld\globals.h
 
-1743675571 e:\_areas\college life\ltnc_code\space_game\icld\player.h
+1743765084 e:\_areas\college life\ltnc_code\space_game\icld\player.h
 
-1743675571 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
+1743776586 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
 	<string>
 	<SDL.h>
 	<SDL_image.h>
 	"vector2d.h"
 	"player.h"
 
-1743587623 source:e:\_areas\college life\ltnc_code\space_game\src\background.cpp
+1743675782 source:e:\_areas\college life\ltnc_code\space_game\src\background.cpp
 	<SDL.h>
 	<string>
 	<SDL_image.h>
@@ -38,7 +39,7 @@
 
 1743439779 e:\_areas\college life\ltnc_code\space_game\icld\viewport.h
 
-1743675782 e:\_areas\college life\ltnc_code\space_game\icld\background.h
+1743776558 e:\_areas\college life\ltnc_code\space_game\icld\background.h
 
 1743598455 source:e:\_areas\college life\ltnc_code\space_game\src\bullet.cpp
 	<SDL.h>
@@ -52,18 +53,32 @@
 
 1743527704 e:\_areas\college life\ltnc_code\space_game\icld\bullet.h
 
-1743647486 source:e:\_areas\college life\ltnc_code\space_game\src\vector2d.cpp
+1743776435 source:e:\_areas\college life\ltnc_code\space_game\src\vector2d.cpp
 	<stdexcept>
 	<iostream>
+	<cmath>
 	"vector2D.h"
 
-1743527704 e:\_areas\college life\ltnc_code\space_game\icld\vector2d.h
+1743776461 e:\_areas\college life\ltnc_code\space_game\icld\vector2d.h
 
-1743520946 e:\_areas\college life\ltnc_code\space_game\icld\textureatlas.h
+1743765084 e:\_areas\college life\ltnc_code\space_game\icld\textureatlas.h
 
 1743521021 source:e:\_areas\college life\ltnc_code\space_game\src\textureatlas.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<string>
 	"textureatlas.h"
+
+1743777164 source:e:\_areas\college life\ltnc_code\space_game\src\enemy.cpp
+	<SDL.h>
+	<SDL_image.h>
+	<string>
+	<cstdlib>
+	<cmath>
+	<list>
+	"vector2d.h"
+	"textureatlas.h"
+	"enemy.h"
+
+1743760207 e:\_areas\college life\ltnc_code\space_game\icld\enemy.h
 
