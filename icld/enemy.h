@@ -3,14 +3,15 @@
 class Enemy{
 public:
     static const int mapToAtlas[4][2];
-    Enemy(int _type, Vector2D _position, Vector2D _direction);
+    Enemy(int _type, Vector2D _position, Vector2D _direction, int _frameFireCycle);
     void renderEnemy(SDL_Renderer *renderer, TextureAtlas &enemyAtlas, Vector2D &camera);
-    void moveEnemy(Vector2D playerPostition);
+    void moveEnemy(Vector2D playerPosition, std::list<Bullet> &bulletList);
 private:
     int type;
     Vector2D position;
     Vector2D direction;
     int currentHealth;
+    int frameFireCycle;
     int maximumHealth;
     double rotateAngle;
 };

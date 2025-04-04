@@ -2,7 +2,7 @@
 1584205420 source:e:\_areas\college life\ltnc_code\space_game\main.cpp
 	<iostream>
 
-1743777516 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
+1743783466 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
@@ -69,7 +69,7 @@
 	<string>
 	"textureatlas.h"
 
-1743777164 source:e:\_areas\college life\ltnc_code\space_game\src\enemy.cpp
+1743783714 source:e:\_areas\college life\ltnc_code\space_game\src\enemy.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<string>
@@ -78,7 +78,8 @@
 	<list>
 	"vector2d.h"
 	"textureatlas.h"
+	"bullet.h"
 	"enemy.h"
 
-1743760207 e:\_areas\college life\ltnc_code\space_game\icld\enemy.h
+1743783243 e:\_areas\college life\ltnc_code\space_game\icld\enemy.h
 

@@ -112,7 +112,7 @@ int main(int argc, char* args[]){
         return 1;
     }
     bool gameRunning = true;
-    int frameCounter = 240;
+    int frameCounter = 300;
     while(gameRunning){
         SDL_Event event;
         int bulletToAdd = 0;
@@ -137,13 +137,13 @@ int main(int argc, char* args[]){
         camera = gamePlayer.getPosition() - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
 
         if(frameCounter <= 0){
-            frameCounter = 240;
-            if(enemyList.size() < 20) spawner.createInto(enemyList, gamePlayer.getPosition());
+            frameCounter = 300;
+            if(enemyList.size() < 15) spawner.createInto(enemyList, gamePlayer.getPosition());
         }
         else --frameCounter;
         for(auto it = enemyList.begin(); it != enemyList.end(); ++it){
             Enemy &e = *it;
-            e.moveEnemy(gamePlayer.getPosition());
+            e.moveEnemy(gamePlayer.getPosition(), bulletList);
         }
 
         for(int i = 0; i < 4; ++i)
