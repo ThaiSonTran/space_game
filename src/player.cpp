@@ -9,6 +9,7 @@ Player::Player(){
     const int MID_PLAY_FIELD = 4e8;
     position = Vector2D(MID_PLAY_FIELD, MID_PLAY_FIELD);
     velocity = Vector2D(0, 0);
+    currentHealth = 50;
 }
 int Player::getXCoord(){
     return this->position.x;
@@ -48,8 +49,8 @@ bool Player::loadTexture(SDL_Renderer *renderer, std::string path){
         return false;
     }
 
-    shipWidth = 0.5 * loadedSurface->w;
-    shipHeight = 0.5 * loadedSurface->h;
+    shipWidth = SCALE_RATIO * loadedSurface->w;
+    shipHeight = SCALE_RATIO * loadedSurface->h;
     SDL_FreeSurface(loadedSurface);
 	shipTexture = newTexture;
 
@@ -59,16 +60,16 @@ void Player::render(SDL_Renderer *renderer, int screenX, int screenY, double ang
 	SDL_Rect renderQuad = {screenX, screenY, shipWidth, shipHeight};
 	SDL_RenderCopyEx(renderer, shipTexture, NULL, &renderQuad, angle, NULL, SDL_FLIP_NONE);
 }
-void Player::accelerateInDirection(const int key_pressed){
-    switch(key_pressed){
+void Player::accelerateInDirection(const int keyPressed){
+    switch(keyPressed){
     case SDLK_s: velocity.y += Player::VEL; break;
     case SDLK_w: velocity.y -= Player::VEL; break;
     case SDLK_d: velocity.x += Player::VEL; break;
     case SDLK_a: velocity.x -= Player::VEL; break;
     }
 }
-void Player::decelerateInDirection(const int key_pressed){
-    switch(key_pressed){
+void Player::decelerateInDirection(const int keyPressed){
+    switch(keyPressed){
     case SDLK_s: velocity.y -= Player::VEL; break;
     case SDLK_w: velocity.y += Player::VEL; break;
     case SDLK_d: velocity.x -= Player::VEL; break;
@@ -77,4 +78,10 @@ void Player::decelerateInDirection(const int key_pressed){
 }
 void Player::movePlayer(){
     position += velocity;
+}
+void Player::decreaseCurrentHealth(int decreaseAmount){
+        currentHealth -= decreaseAmount;
+}
+bool Player::isDead(){
+    return currentHealth <= 0;
 }

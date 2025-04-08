@@ -4,6 +4,7 @@
 class Player{
 public:
     static const int VEL = 15; //15 pixel per frame
+    static constexpr double SCALE_RATIO = 0.5;
     Player();
     void clearData();
 
@@ -16,14 +17,19 @@ public:
     bool loadTexture(SDL_Renderer *renderer, std::string path);
     void render(SDL_Renderer *renderer, int screenX, int screenY, double angle);
 
-    void accelerateInDirection(const int key_pressed);
-    void decelerateInDirection(const int key_pressed);
+    void accelerateInDirection(const int keyPressed);
+    void decelerateInDirection(const int keyPressed);
     void movePlayer();
+
+    void decreaseCurrentHealth(int decreaseAmount);
+    bool isDead();
+
 
 private:
     Vector2D position, velocity;
     SDL_Texture *shipTexture;
     int shipHeight, shipWidth;
+    int currentHealth;
 };
 
 #endif

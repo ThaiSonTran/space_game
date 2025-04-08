@@ -7,14 +7,16 @@
 #include "vector2d.h"
 #include "bullet.h"
 
-Bullet::Bullet(int _x, int _y, int _dirX, int _dirY, double _rotateAngle){
+Bullet::Bullet(int _x, int _y, int _dirX, int _dirY, double _rotateAngle, bool _isEnemyBullet = false){
     position = Vector2D(_x, _y);
     direction = Vector2D(_dirX, _dirY);
     rotateAngle = _rotateAngle;
+    isEnemyBullet = _isEnemyBullet;
+}
+Vector2D Bullet::getPosition(){
+    return this->position;
 }
 void Bullet::renderBullet(SDL_Renderer *renderer, int cellIndexX, int cellIndexY, TextureAtlas &bulletAtlas, Vector2D &camera){
-    const double ScaleRatio = 0.05;
-
     Vector2D WinCoord = position - camera;
     SDL_Rect clip = {
         cellIndexX * bulletAtlas.cellWidth,
@@ -22,21 +24,21 @@ void Bullet::renderBullet(SDL_Renderer *renderer, int cellIndexX, int cellIndexY
         bulletAtlas.cellWidth, bulletAtlas.cellHeight
     };
     SDL_Rect renderQuad = {
-        WinCoord.x - int(ScaleRatio * bulletAtlas.cellWidth) / 2,
-        WinCoord.y - int(ScaleRatio * bulletAtlas.cellHeight) / 2,
-        int(ScaleRatio * bulletAtlas.cellWidth), int(ScaleRatio * bulletAtlas.cellHeight)
+        WinCoord.x - int(SCALE_RATIO * bulletAtlas.cellWidth) / 2,
+        WinCoord.y - int(SCALE_RATIO * bulletAtlas.cellHeight) / 2,
+        int(SCALE_RATIO * bulletAtlas.cellWidth), int(SCALE_RATIO * bulletAtlas.cellHeight)
     };
     SDL_RenderCopyEx(renderer, bulletAtlas.texture, &clip, &renderQuad, rotateAngle, NULL, SDL_FLIP_NONE);
 }
 void Bullet::moveBullet(){
     double len = sqrt(1LL * direction.x * direction.x + 1LL * direction.y * direction.y);
     if(len == 0){
-        position.x += 25;
+        position.x += Bullet::VEL;
         return;
     }
     double deltaX = direction.x / len;
     double deltaY = direction.y / len;
-    position += Vector2D(int(deltaX * 25), int(deltaY * 25));
+    position += Vector2D(int(deltaX * Bullet::VEL), int(deltaY * Bullet::VEL));
 }
 bool Bullet::isTooFar(int x, int y){
     int deltaX = position.x - x;

@@ -19,7 +19,9 @@ const int WINDOW_HEIGHT = 700;
 const int WIN_MID_WIDTH = WINDOW_WIDTH / 2;
 const int WIN_MID_HEIGHT = WINDOW_HEIGHT / 2;
 
-const int PI = 3.14159265359;
+const int ENEMY_SPAWN_DELAY = 300;
+const int MAX_ENEMIES = 15;
+const int COLLISION_RADIUS = 33;
 
 SDL_Window *gameWindow;
 SDL_Renderer* gameRenderer;
@@ -102,6 +104,9 @@ bool loadMedia(){
 
     return true;
 }
+bool intersect(Vector2D bulletPosition, Vector2D targetPosition){
+    return Vector2D(targetPosition.x - bulletPosition.x, targetPosition.y - bulletPosition.y).magnitude() < COLLISION_RADIUS;
+}
 int main(int argc, char* args[]){
     if(!initGame()){
         printf("Failed to initialize game\n");
@@ -112,7 +117,7 @@ int main(int argc, char* args[]){
         return 1;
     }
     bool gameRunning = true;
-    int frameCounter = 300;
+    int frameCounter = ENEMY_SPAWN_DELAY;
     while(gameRunning){
         SDL_Event event;
         int bulletToAdd = 0;
@@ -137,10 +142,11 @@ int main(int argc, char* args[]){
         camera = gamePlayer.getPosition() - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
 
         if(frameCounter <= 0){
-            frameCounter = 300;
-            if(enemyList.size() < 15) spawner.createInto(enemyList, gamePlayer.getPosition());
+            frameCounter = ENEMY_SPAWN_DELAY;
+            if(enemyList.size() < MAX_ENEMIES) spawner.createInto(enemyList, gamePlayer.getPosition());
         }
         else --frameCounter;
+
         for(auto it = enemyList.begin(); it != enemyList.end(); ++it){
             Enemy &e = *it;
             e.moveEnemy(gamePlayer.getPosition(), bulletList);
@@ -152,26 +158,42 @@ int main(int argc, char* args[]){
         Vector2D mousePos;
         SDL_GetMouseState(&mousePos.x, &mousePos.y);
         Vector2D mouseDir = mousePos - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
+
         if(mouseDir.x == 0 && mouseDir.y == 0) mouseDir.x = 1;
-        double angle = std::atan2((double)mouseDir.y, (double)mouseDir.x) * 180 / PI + 90;
+        double angle = std::atan2((double)mouseDir.y, (double)mouseDir.x) * 180 / M_PI + 90;
 
         for(; bulletToAdd; --bulletToAdd){
             bulletList.push_back(Bullet(
                 gamePlayer.getXCoord(), gamePlayer.getYCoord(),
-                mouseDir.x, mouseDir.y, angle
+                mouseDir.x, mouseDir.y, angle, false
             ));
         }
-
         for(auto it = bulletList.begin(); it != bulletList.end();){
+
             Bullet &bullet = *it;
             bullet.renderBullet(gameRenderer, 1, 1, bulletAtlas, camera);
-
+            bullet.moveBullet();
             if(bullet.isTooFar(gamePlayer.getXCoord(), gamePlayer.getYCoord())){
                 it = bulletList.erase(it);
                 continue;
             }
+            if(bullet.isEnemyBullet){
+                if(intersect(bullet.getPosition(), gamePlayer.getPosition())){
+                    it = bulletList.erase(it);
+                    continue;
+                }
+            }
+            else{
+                for(auto it2 = enemyList.begin(); it2 != enemyList.end();){
+                    if(intersect(bullet.getPosition(), it2->getPosition())){
+                        it = bulletList.erase(it);
 
-            bullet.moveBullet();
+                        break;
+                    }
+                    ++it2;
+                }
+                //if do delete bullet in this section, do not ++it
+            }
             ++it;
         }
 
@@ -185,6 +207,7 @@ int main(int argc, char* args[]){
             WIN_MID_HEIGHT - gamePlayer.getShipHeight() / 2,
             angle
         );
+        //consider adding crosshair for this shit
         SDL_RenderPresent(gameRenderer);
     }
     closeGame();

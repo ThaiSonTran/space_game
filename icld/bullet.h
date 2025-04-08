@@ -2,10 +2,16 @@
 #define BULLET_H
 class Bullet{
 public:
-    //bool loadTexture(SDL_Renderer *renderer, std::string path);
-    //void render(SDL_Renderer *renderer, int x, int y);
-    Bullet(int _x, int _y, int _dirX, int _dirY, double _rotateAngle);
+    static const int VEL = 20;
+    static constexpr double SCALE_RATIO = 0.05;
+    bool isEnemyBullet;
+
+    Bullet(int _x, int _y, int _dirX, int _dirY, double _rotateAngle, bool _isEnemyBullet);
+
+    Vector2D getPosition();
+
     void renderBullet(SDL_Renderer *renderer, int cellIndexX, int cellIndexY, TextureAtlas &bulletAtlas, Vector2D &camera);
+
     void moveBullet();
     bool isTooFar(int x, int y);
 private:
