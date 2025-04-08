@@ -12,6 +12,7 @@
 #include "player.h"
 #include "background.h"
 #include "enemy.h"
+#include "healthbar.h"
 
 const int WINDOW_WIDTH = 1300;
 const int WINDOW_HEIGHT = 700;
@@ -37,6 +38,8 @@ std::list<Enemy> enemyList;
 TextureAtlas enemyAtlas;
 
 EnemySpawner spawner;
+
+HealthBar lifebar;
 
 Mix_Chunk* soundEff = NULL;
 
@@ -114,16 +117,142 @@ bool loadMedia(){
     if(!enemyAtlas.loadTexture(gameRenderer, "resources/enemyAtlas.png")) return false;
     enemyAtlas.calculateCellSize(5, 2);
 
+    if(!lifebar.loadTexture(gameRenderer, "resources/fill.png", lifebar.fillTexture)) return false;
+    if(!lifebar.loadTexture(gameRenderer, "resources/border.png", lifebar.borderTexture)) return false;
+    lifebar.healthBarTexture = SDL_CreateTexture(
+        gameRenderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET,
+        76, 20
+    );
+
+    SDL_SetTextureBlendMode(lifebar.healthBarTexture, SDL_BLENDMODE_BLEND);
+
     soundEff = Mix_LoadWAV("resources/shoot.flac");
 	if(soundEff == NULL){
 		printf("Failed to load shoot sound effect! SDL_mixer Error: %s\n", Mix_GetError());
 		return false;
 	}
-
     return true;
 }
 bool intersect(Vector2D bulletPosition, Vector2D targetPosition){
     return Vector2D(targetPosition.x - bulletPosition.x, targetPosition.y - bulletPosition.y).magnitude() < COLLISION_RADIUS;
+}
+inline void normal_play(bool &gameRunning){
+    SDL_Event event;
+    int bulletToAdd = 0;
+    while(SDL_PollEvent(&event)){
+        if(event.type == SDL_QUIT){
+            gameRunning = false;
+        }
+        else if(event.type == SDL_KEYDOWN && event.key.repeat == false){
+            gamePlayer.accelerateInDirection(event.key.keysym.sym);
+        }
+        else if(event.type == SDL_KEYUP && event.key.repeat == false){
+            gamePlayer.decelerateInDirection(event.key.keysym.sym);
+        }
+        else if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT){
+            ++bulletToAdd;
+            Mix_PlayChannel(-1, soundEff, 0);
+        }
+    }
+    SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255); //black
+    SDL_RenderClear(gameRenderer);
+
+    gamePlayer.movePlayer();
+    camera = gamePlayer.getPosition() - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
+
+    if(frameCounter <= 0){
+        frameCounter = ENEMY_SPAWN_DELAY;
+        if(enemyList.size() < MAX_ENEMIES) spawner.createInto(enemyList, gamePlayer.getPosition());
+    }
+    else --frameCounter;
+
+    for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end(); ++enemyIter){
+        Enemy &e = *enemyIter;
+        e.moveEnemy(gamePlayer.getPosition(), bulletList);
+    }
+
+    for(int i = 0; i < 4; ++i)
+        background[i].renderSurroundedTiles(gameRenderer, camera);
+
+    Vector2D mousePos;
+    SDL_GetMouseState(&mousePos.x, &mousePos.y);
+    Vector2D mouseDir = mousePos - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
+
+    if(mouseDir.x == 0 && mouseDir.y == 0) mouseDir.x = 1;
+    double angle = std::atan2((double)mouseDir.y, (double)mouseDir.x) * 180 / M_PI + 90;
+
+    for(; bulletToAdd; --bulletToAdd){
+        bulletList.push_back(Bullet(
+            gamePlayer.getXCoord(), gamePlayer.getYCoord(),
+            mouseDir.x, mouseDir.y, angle, false
+        ));
+    }
+    for(auto bulletIter = bulletList.begin(); bulletIter != bulletList.end();){
+
+        Bullet &bullet = *bulletIter;
+        bullet.renderBullet(gameRenderer, 1, 1, bulletAtlas, camera);
+        bullet.moveBullet();
+        if(bullet.isTooFar(gamePlayer.getXCoord(), gamePlayer.getYCoord())){
+            bulletIter = bulletList.erase(bulletIter);
+            continue;
+        }
+        if(bullet.isEnemyBullet){
+            if(intersect(bullet.getPosition(), gamePlayer.getPosition())){
+                bulletIter = bulletList.erase(bulletIter);
+
+                gamePlayer.decreaseCurrentHealth(1);
+                if(gamePlayer.isDead()) currentState = GAME_OVER;
+                continue;
+            }
+        }
+        else{
+            bool doEraseBullet = false;
+            for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end();){
+                Enemy &e = *enemyIter;
+                if(intersect(bullet.getPosition(), e.getPosition())){
+                    bulletIter = bulletList.erase(bulletIter);
+                    doEraseBullet = true;
+                    e.decreaseCurrentHealth(1);
+                    if(e.isDead()) enemyList.erase(enemyIter);
+
+                    break;
+                }
+                ++enemyIter;
+            }
+            if(doEraseBullet) continue;
+        }
+        ++bulletIter;
+    }
+
+    for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end(); ++enemyIter){
+        Enemy &e = *enemyIter;
+        e.renderEnemy(gameRenderer, enemyAtlas, camera);
+    }
+    gamePlayer.render(
+        gameRenderer,
+        WIN_MID_WIDTH - gamePlayer.getShipWidth() / 2,
+        WIN_MID_HEIGHT - gamePlayer.getShipHeight() / 2,
+        angle
+    );
+    lifebar.updateHealthBarTexture(gameRenderer, gamePlayer.calculateHealthRatio());
+    lifebar.render(gameRenderer, 5, 5);
+
+    //consider adding crosshair for this shit
+    SDL_RenderPresent(gameRenderer);
+}
+inline void lose_state(bool &gameRunning){
+    SDL_Event event;
+    while(SDL_PollEvent(&event)){
+        if(event.type == SDL_QUIT){
+            gameRunning = false;
+        }
+    }
+    SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255); //black
+    SDL_RenderClear(gameRenderer);
+
+    SDL_RenderPresent(gameRenderer);
 }
 int main(int argc, char* args[]){
     if(!initGame()){
@@ -136,103 +265,14 @@ int main(int argc, char* args[]){
     }
     bool gameRunning = true;
     while(gameRunning){
-        SDL_Event event;
-        int bulletToAdd = 0;
-        while(SDL_PollEvent(&event)){
-            if(event.type == SDL_QUIT){
-                gameRunning = false;
-            }
-            else if(event.type == SDL_KEYDOWN && event.key.repeat == false){
-                gamePlayer.accelerateInDirection(event.key.keysym.sym);
-            }
-            else if(event.type == SDL_KEYUP && event.key.repeat == false){
-                gamePlayer.decelerateInDirection(event.key.keysym.sym);
-            }
-            else if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT){
-                ++bulletToAdd;
-                Mix_PlayChannel(-1, soundEff, 0);
-            }
+        switch(currentState){
+        case PLAYING:
+            normal_play(gameRunning);
+            break;
+        case GAME_OVER:
+            lose_state(gameRunning);
+            break;
         }
-        SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255); //black
-        SDL_RenderClear(gameRenderer);
-
-        gamePlayer.movePlayer();
-        camera = gamePlayer.getPosition() - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
-
-        if(frameCounter <= 0){
-            frameCounter = ENEMY_SPAWN_DELAY;
-            if(enemyList.size() < MAX_ENEMIES) spawner.createInto(enemyList, gamePlayer.getPosition());
-        }
-        else --frameCounter;
-
-        for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end(); ++enemyIter){
-            Enemy &e = *enemyIter;
-            e.moveEnemy(gamePlayer.getPosition(), bulletList);
-        }
-
-        for(int i = 0; i < 4; ++i)
-            background[i].renderSurroundedTiles(gameRenderer, camera);
-
-        Vector2D mousePos;
-        SDL_GetMouseState(&mousePos.x, &mousePos.y);
-        Vector2D mouseDir = mousePos - Vector2D(WIN_MID_WIDTH, WIN_MID_HEIGHT);
-
-        if(mouseDir.x == 0 && mouseDir.y == 0) mouseDir.x = 1;
-        double angle = std::atan2((double)mouseDir.y, (double)mouseDir.x) * 180 / M_PI + 90;
-
-        for(; bulletToAdd; --bulletToAdd){
-            bulletList.push_back(Bullet(
-                gamePlayer.getXCoord(), gamePlayer.getYCoord(),
-                mouseDir.x, mouseDir.y, angle, false
-            ));
-        }
-        for(auto bulletIter = bulletList.begin(); bulletIter != bulletList.end();){
-
-            Bullet &bullet = *bulletIter;
-            bullet.renderBullet(gameRenderer, 1, 1, bulletAtlas, camera);
-            bullet.moveBullet();
-            if(bullet.isTooFar(gamePlayer.getXCoord(), gamePlayer.getYCoord())){
-                bulletIter = bulletList.erase(bulletIter);
-                continue;
-            }
-            if(bullet.isEnemyBullet){
-                if(intersect(bullet.getPosition(), gamePlayer.getPosition())){
-                    bulletIter = bulletList.erase(bulletIter);
-                    continue;
-                }
-            }
-            else{
-                bool doEraseBullet = false;
-                for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end();){
-                    Enemy &e = *enemyIter;
-                    if(intersect(bullet.getPosition(), e.getPosition())){
-                        bulletIter = bulletList.erase(bulletIter);
-                        doEraseBullet = true;
-
-                        e.decreaseCurrentHealth(1);
-                        if(e.isDead()) enemyList.erase(enemyIter);
-
-                        break;
-                    }
-                    ++enemyIter;
-                }
-                if(doEraseBullet) continue;
-            }
-            ++bulletIter;
-        }
-
-        for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end(); ++enemyIter){
-            Enemy &e = *enemyIter;
-            e.renderEnemy(gameRenderer, enemyAtlas, camera);
-        }
-        gamePlayer.render(
-            gameRenderer,
-            WIN_MID_WIDTH - gamePlayer.getShipWidth() / 2,
-            WIN_MID_HEIGHT - gamePlayer.getShipHeight() / 2,
-            angle
-        );
-        //consider adding crosshair for this shit
-        SDL_RenderPresent(gameRenderer);
     }
     closeGame();
     return 0;

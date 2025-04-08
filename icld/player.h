@@ -23,6 +23,7 @@ public:
 
     void decreaseCurrentHealth(int decreaseAmount);
     bool isDead();
+    float calculateHealthRatio();
 
 
 private:

@@ -85,3 +85,6 @@ void Player::decreaseCurrentHealth(int decreaseAmount){
 bool Player::isDead(){
     return currentHealth <= 0;
 }
+float Player::calculateHealthRatio(){
+    return (1.0f * currentHealth / 50);
+}

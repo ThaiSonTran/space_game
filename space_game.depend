@@ -2,7 +2,7 @@
 1584205420 source:e:\_areas\college life\ltnc_code\space_game\main.cpp
 	<iostream>
 
-1744116457 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
+1744126305 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
@@ -17,12 +17,13 @@
 	"player.h"
 	"background.h"
 	"enemy.h"
+	"healthbar.h"
 
 1743442465 e:\_areas\college life\ltnc_code\space_game\icld\globals.h
 
-1744112280 e:\_areas\college life\ltnc_code\space_game\icld\player.h
+1744124165 e:\_areas\college life\ltnc_code\space_game\icld\player.h
 
-1744105175 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
+1744124201 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
 	<string>
 	<SDL.h>
 	<SDL_image.h>
@@ -82,4 +83,13 @@
 	"enemy.h"
 
 1744116740 e:\_areas\college life\ltnc_code\space_game\icld\enemy.h
+
+1744126334 source:e:\_areas\college life\ltnc_code\space_game\src\healthbar.cpp
+	<string>
+	<SDL.h>
+	<iostream>
+	<SDL_image.h>
+	"healthbar.h"
+
+1744126140 e:\_areas\college life\ltnc_code\space_game\icld\healthbar.h
 
