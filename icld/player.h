@@ -3,7 +3,7 @@
 
 class Player{
 public:
-    static const int VEL = 15; //15 pixel per frame
+    static const int VEL = 12; //15 pixel per frame
     static constexpr double SCALE_RATIO = 0.5;
     Player();
     void clearData();

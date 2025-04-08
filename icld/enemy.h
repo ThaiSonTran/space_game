@@ -2,7 +2,7 @@
 #define ENEMY_H
 class Enemy{
 public:
-    static const int VEL = 3;
+    static const int VEL = 8;
     static const int mapToAtlas[4][2];
     static constexpr double SCALE_RATIO = 0.5;
 
@@ -27,7 +27,7 @@ private:
 };
 class EnemySpawner{
 public:
-    static const int spawnDistance = 200;
+    static const int spawnDistance = 700;
     static const Vector2D spawnDirection[8];
     void createInto(std::list<Enemy> &enemyList, Vector2D playerPostion);
 

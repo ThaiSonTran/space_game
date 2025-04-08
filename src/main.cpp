@@ -38,6 +38,16 @@ TextureAtlas enemyAtlas;
 
 EnemySpawner spawner;
 
+Mix_Chunk* soundEff = NULL;
+
+int frameCounter = ENEMY_SPAWN_DELAY;
+
+enum GameState{
+    PLAYING,
+    GAME_OVER
+};
+GameState currentState;
+
 bool initGame(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) return false;
 
@@ -45,6 +55,7 @@ bool initGame(){
     int imgFlags = IMG_INIT_PNG;
     if((IMG_Init(imgFlags) & imgFlags) == 0) return false;
 
+    if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) return false;
 
     if(SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) == 0)
         printf("Warning: Linear texture filtering not enabled!");
@@ -80,6 +91,7 @@ void closeGame(){
 
     SDL_Quit();
     IMG_Quit();
+    Mix_Quit();
 }
 bool loadMedia(){
     if(!gamePlayer.loadTexture(gameRenderer, "resources/green.png")) return false;
@@ -102,6 +114,12 @@ bool loadMedia(){
     if(!enemyAtlas.loadTexture(gameRenderer, "resources/enemyAtlas.png")) return false;
     enemyAtlas.calculateCellSize(5, 2);
 
+    soundEff = Mix_LoadWAV("resources/shoot.flac");
+	if(soundEff == NULL){
+		printf("Failed to load shoot sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+		return false;
+	}
+
     return true;
 }
 bool intersect(Vector2D bulletPosition, Vector2D targetPosition){
@@ -117,7 +135,6 @@ int main(int argc, char* args[]){
         return 1;
     }
     bool gameRunning = true;
-    int frameCounter = ENEMY_SPAWN_DELAY;
     while(gameRunning){
         SDL_Event event;
         int bulletToAdd = 0;
@@ -133,6 +150,7 @@ int main(int argc, char* args[]){
             }
             else if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT){
                 ++bulletToAdd;
+                Mix_PlayChannel(-1, soundEff, 0);
             }
         }
         SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255); //black
@@ -147,8 +165,8 @@ int main(int argc, char* args[]){
         }
         else --frameCounter;
 
-        for(auto it = enemyList.begin(); it != enemyList.end(); ++it){
-            Enemy &e = *it;
+        for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end(); ++enemyIter){
+            Enemy &e = *enemyIter;
             e.moveEnemy(gamePlayer.getPosition(), bulletList);
         }
 
@@ -168,37 +186,43 @@ int main(int argc, char* args[]){
                 mouseDir.x, mouseDir.y, angle, false
             ));
         }
-        for(auto it = bulletList.begin(); it != bulletList.end();){
+        for(auto bulletIter = bulletList.begin(); bulletIter != bulletList.end();){
 
-            Bullet &bullet = *it;
+            Bullet &bullet = *bulletIter;
             bullet.renderBullet(gameRenderer, 1, 1, bulletAtlas, camera);
             bullet.moveBullet();
             if(bullet.isTooFar(gamePlayer.getXCoord(), gamePlayer.getYCoord())){
-                it = bulletList.erase(it);
+                bulletIter = bulletList.erase(bulletIter);
                 continue;
             }
             if(bullet.isEnemyBullet){
                 if(intersect(bullet.getPosition(), gamePlayer.getPosition())){
-                    it = bulletList.erase(it);
+                    bulletIter = bulletList.erase(bulletIter);
                     continue;
                 }
             }
             else{
-                for(auto it2 = enemyList.begin(); it2 != enemyList.end();){
-                    if(intersect(bullet.getPosition(), it2->getPosition())){
-                        it = bulletList.erase(it);
+                bool doEraseBullet = false;
+                for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end();){
+                    Enemy &e = *enemyIter;
+                    if(intersect(bullet.getPosition(), e.getPosition())){
+                        bulletIter = bulletList.erase(bulletIter);
+                        doEraseBullet = true;
+
+                        e.decreaseCurrentHealth(1);
+                        if(e.isDead()) enemyList.erase(enemyIter);
 
                         break;
                     }
-                    ++it2;
+                    ++enemyIter;
                 }
-                //if do delete bullet in this section, do not ++it
+                if(doEraseBullet) continue;
             }
-            ++it;
+            ++bulletIter;
         }
 
-        for(auto it = enemyList.begin(); it != enemyList.end(); ++it){
-            Enemy &e = *it;
+        for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end(); ++enemyIter){
+            Enemy &e = *enemyIter;
             e.renderEnemy(gameRenderer, enemyAtlas, camera);
         }
         gamePlayer.render(

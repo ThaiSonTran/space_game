@@ -2,7 +2,7 @@
 1584205420 source:e:\_areas\college life\ltnc_code\space_game\main.cpp
 	<iostream>
 
-1744105175 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
+1744116457 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
@@ -20,7 +20,7 @@
 
 1743442465 e:\_areas\college life\ltnc_code\space_game\icld\globals.h
 
-1744105175 e:\_areas\college life\ltnc_code\space_game\icld\player.h
+1744112280 e:\_areas\college life\ltnc_code\space_game\icld\player.h
 
 1744105175 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
 	<string>
@@ -81,5 +81,5 @@
 	"bullet.h"
 	"enemy.h"
 
-1744105319 e:\_areas\college life\ltnc_code\space_game\icld\enemy.h
+1744116740 e:\_areas\college life\ltnc_code\space_game\icld\enemy.h
 
