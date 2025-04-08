@@ -39,12 +39,14 @@
 		<Unit filename="icld/background.h" />
 		<Unit filename="icld/bullet.h" />
 		<Unit filename="icld/enemy.h" />
+		<Unit filename="icld/healthbar.h" />
 		<Unit filename="icld/player.h" />
 		<Unit filename="icld/textureatlas.h" />
 		<Unit filename="icld/vector2d.h" />
 		<Unit filename="src/background.cpp" />
 		<Unit filename="src/bullet.cpp" />
 		<Unit filename="src/enemy.cpp" />
+		<Unit filename="src/healthbar.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/player.cpp" />
 		<Unit filename="src/textureatlas.cpp" />

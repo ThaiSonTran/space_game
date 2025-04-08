@@ -25,6 +25,10 @@ public:
     bool isDead();
     float calculateHealthRatio();
 
+    void resetHealth() {
+        currentHealth = 50;
+    }
+
 
 private:
     Vector2D position, velocity;

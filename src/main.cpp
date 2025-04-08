@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -24,12 +25,16 @@ const int ENEMY_SPAWN_DELAY = 300;
 const int MAX_ENEMIES = 15;
 const int COLLISION_RADIUS = 33;
 
+const int SCORE_X = WINDOW_WIDTH - 200;
+const int SCORE_Y = WINDOW_HEIGHT - 50;
+
 SDL_Window *gameWindow;
 SDL_Renderer* gameRenderer;
 
 Player gamePlayer;
 TiledBackground background[4];
 Vector2D camera;
+TTF_Font* gameFont = NULL;
 
 std::list<Bullet> bulletList;
 TextureAtlas bulletAtlas;
@@ -44,12 +49,34 @@ HealthBar lifebar;
 Mix_Chunk* soundEff = NULL;
 
 int frameCounter = ENEMY_SPAWN_DELAY;
+int playerScore = 0;
 
 enum GameState{
     PLAYING,
     GAME_OVER
 };
 GameState currentState;
+
+SDL_Texture* createTextTexture(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color){
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, color);
+    if(textSurface == NULL) {
+        printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+        return NULL;
+    }
+
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    if(textTexture == NULL) {
+        printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+    }
+    SDL_FreeSurface(textSurface);
+    return textTexture;
+}
+void renderText(SDL_Renderer* renderer, SDL_Texture* textTexture, int x, int y){
+    int width, height;
+    SDL_QueryTexture(textTexture, NULL, NULL, &width, &height);
+    SDL_Rect renderRect = { x, y, width, height };
+    SDL_RenderCopy(renderer, textTexture, NULL, &renderRect);
+}
 
 bool initGame(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) return false;
@@ -59,6 +86,8 @@ bool initGame(){
     if((IMG_Init(imgFlags) & imgFlags) == 0) return false;
 
     if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) return false;
+
+    if(TTF_Init() == -1) return false;
 
     if(SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) == 0)
         printf("Warning: Linear texture filtering not enabled!");
@@ -133,6 +162,13 @@ bool loadMedia(){
 		printf("Failed to load shoot sound effect! SDL_mixer Error: %s\n", Mix_GetError());
 		return false;
 	}
+
+	gameFont = TTF_OpenFont("resources/CommodorePixeled.ttf", 24);
+    if(gameFont == NULL) {
+        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+        return false;
+    }
+
     return true;
 }
 bool intersect(Vector2D bulletPosition, Vector2D targetPosition){
@@ -192,13 +228,13 @@ inline void normal_play(bool &gameRunning){
     for(auto bulletIter = bulletList.begin(); bulletIter != bulletList.end();){
 
         Bullet &bullet = *bulletIter;
-        bullet.renderBullet(gameRenderer, 1, 1, bulletAtlas, camera);
         bullet.moveBullet();
         if(bullet.isTooFar(gamePlayer.getXCoord(), gamePlayer.getYCoord())){
             bulletIter = bulletList.erase(bulletIter);
             continue;
         }
         if(bullet.isEnemyBullet){
+            bullet.renderBullet(gameRenderer, 1, 1, bulletAtlas, camera);
             if(intersect(bullet.getPosition(), gamePlayer.getPosition())){
                 bulletIter = bulletList.erase(bulletIter);
 
@@ -208,14 +244,21 @@ inline void normal_play(bool &gameRunning){
             }
         }
         else{
+            bullet.renderBullet(gameRenderer, 0, 1, bulletAtlas, camera);
             bool doEraseBullet = false;
             for(auto enemyIter = enemyList.begin(); enemyIter != enemyList.end();){
                 Enemy &e = *enemyIter;
                 if(intersect(bullet.getPosition(), e.getPosition())){
                     bulletIter = bulletList.erase(bulletIter);
                     doEraseBullet = true;
+
                     e.decreaseCurrentHealth(1);
-                    if(e.isDead()) enemyList.erase(enemyIter);
+                    playerScore += 5;
+
+                    if(e.isDead()){
+                        enemyList.erase(enemyIter);
+                        playerScore += 10;
+                    }
 
                     break;
                 }
@@ -239,18 +282,64 @@ inline void normal_play(bool &gameRunning){
     lifebar.updateHealthBarTexture(gameRenderer, gamePlayer.calculateHealthRatio());
     lifebar.render(gameRenderer, 5, 5);
 
+    char scoreText[32];
+    sprintf(scoreText, "Score: %d", playerScore);
+    SDL_Color textColor = { 255, 255, 255, 255 }; // White text
+    SDL_Texture* scoreTexture = createTextTexture(gameRenderer, gameFont, scoreText, textColor);
+    if(scoreTexture != NULL){
+        int width, height;
+        SDL_QueryTexture(scoreTexture, NULL, NULL, &width, &height);
+        renderText(gameRenderer, scoreTexture, WINDOW_WIDTH - width - 20, WINDOW_HEIGHT - height - 20);
+        SDL_DestroyTexture(scoreTexture);
+    }
     //consider adding crosshair for this shit
     SDL_RenderPresent(gameRenderer);
 }
 inline void lose_state(bool &gameRunning){
     SDL_Event event;
-    while(SDL_PollEvent(&event)){
-        if(event.type == SDL_QUIT){
+    while(SDL_PollEvent(&event)) {
+        if(event.type == SDL_QUIT) {
             gameRunning = false;
         }
+        else if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
+            // Press Enter to restart game
+            currentState = PLAYING;
+            playerScore = 0;
+            gamePlayer.resetHealth();
+            enemyList.clear();
+            bulletList.clear();
+        }
     }
-    SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255); //black
+    SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255);
     SDL_RenderClear(gameRenderer);
+    SDL_Color textColor = { 255, 0, 0, 255 }; // Red text
+    SDL_Texture* gameOverTexture = createTextTexture(gameRenderer, gameFont, "GAME OVER", textColor);
+
+    if(gameOverTexture != NULL) {
+        int width, height;
+        SDL_QueryTexture(gameOverTexture, NULL, NULL, &width, &height);
+        renderText(gameRenderer, gameOverTexture, (WINDOW_WIDTH - width) / 2, (WINDOW_HEIGHT - height) / 2 - 50);
+        SDL_DestroyTexture(gameOverTexture);
+    }
+    char finalScoreText[64];
+    sprintf(finalScoreText, "Final Score: %d", playerScore);
+    SDL_Color scoreColor = { 255, 255, 255, 255 }; // White text
+    SDL_Texture* finalScoreTexture = createTextTexture(gameRenderer, gameFont, finalScoreText, scoreColor);
+
+    if(finalScoreTexture != NULL) {
+        int width, height;
+        SDL_QueryTexture(finalScoreTexture, NULL, NULL, &width, &height);
+        renderText(gameRenderer, finalScoreTexture, (WINDOW_WIDTH - width) / 2, (WINDOW_HEIGHT - height) / 2 + 50);
+        SDL_DestroyTexture(finalScoreTexture);
+    }
+    SDL_Texture* restartTexture = createTextTexture(gameRenderer, gameFont, "Press ENTER to restart", scoreColor);
+
+    if(restartTexture != NULL) {
+        int width, height;
+        SDL_QueryTexture(restartTexture, NULL, NULL, &width, &height);
+        renderText(gameRenderer, restartTexture, (WINDOW_WIDTH - width) / 2, (WINDOW_HEIGHT - height) / 2 + 150);
+        SDL_DestroyTexture(restartTexture);
+    }
 
     SDL_RenderPresent(gameRenderer);
 }

@@ -2,7 +2,7 @@
 1584205420 source:e:\_areas\college life\ltnc_code\space_game\main.cpp
 	<iostream>
 
-1744126305 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
+1744128118 source:e:\_areas\college life\ltnc_code\space_game\src\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
@@ -21,7 +21,7 @@
 
 1743442465 e:\_areas\college life\ltnc_code\space_game\icld\globals.h
 
-1744124165 e:\_areas\college life\ltnc_code\space_game\icld\player.h
+1744128948 e:\_areas\college life\ltnc_code\space_game\icld\player.h
 
 1744124201 source:e:\_areas\college life\ltnc_code\space_game\src\player.cpp
 	<string>
