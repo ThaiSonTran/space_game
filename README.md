@@ -73,7 +73,7 @@ Ensure all the DLL files and resource folder are in the same directory as the ex
 - SDL2_ttf.dll
 - resources/ folder (contains all game assets)
 
-### Screenshots
+## Preview
 ![Image](https://github.com/user-attachments/assets/56fba5b8-e288-4fad-8225-d4891ecc3106)
 
 ![Image](https://github.com/user-attachments/assets/dad4290c-45c3-421e-a7a6-3bc55aaa1cb0)
